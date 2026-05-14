@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,4 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Order Management
     Route::post('/orders', [OrderController::class, 'store']);
+
+    // Shipping Management
+    Route::post('/shipping/cost', [ShippingController::class, 'calculate']);
 });

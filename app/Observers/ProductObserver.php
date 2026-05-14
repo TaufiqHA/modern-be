@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
 
 class ProductObserver
 {
@@ -11,11 +12,9 @@ class ProductObserver
      */
     public function saving(Product $product): void
     {
-        // If stock is 0 or less, we can implicitly treat it as Pre-Order logic
-        // or update a specific 'status' column if one exists.
-        if ($product->stock <= 0) {
-            // Example: $product->type = 'pre_order';
-            // Based on ERD, the Order 'type' is determined by availability.
+        // If stock transitions from > 0 to <= 0, log the event
+        if ($product->isDirty('stock') && $product->getOriginal('stock') > 0 && $product->stock <= 0) {
+            Log::info("Product '{$product->name}' (ID: {$product->id}) has transitioned to Pre-Order status due to zero stock.");
         }
     }
 

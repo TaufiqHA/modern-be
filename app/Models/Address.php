@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'recipient_name',
     'phone_number',
     'full_address',
+    'city_id',
     'is_default',
 ])]
 class Address extends Model
