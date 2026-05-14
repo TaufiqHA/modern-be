@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\JastipController as AdminJastipController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\JastipController;
@@ -51,5 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+    Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
     Route::patch('/jastip/{id}/quote', [AdminJastipController::class, 'updateQuote']);
+    Route::patch('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
 });
