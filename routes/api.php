@@ -35,7 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/addresses', [AddressController::class, 'store']);
 
     // Order Management
+    Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/orders/{id}/payment-proof', [OrderController::class, 'uploadPaymentProof']);
 
     // Shipping Management
     Route::post('/shipping/cost', [ShippingController::class, 'calculate']);

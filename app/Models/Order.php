@@ -17,7 +17,9 @@ use Illuminate\Support\Str;
     'type',
     'status',
     'payment_status',
+    'payment_method',
     'tracking_number',
+    'payment_proof',
 ])]
 class Order extends Model
 {

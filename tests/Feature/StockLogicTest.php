@@ -25,9 +25,9 @@ class StockLogicTest extends TestCase
     }
 
     /**
-     * Test that order type becomes pre_order when buying more than stock.
+     * Test that order fails with 422 when buying more than stock (but stock > 0).
      */
-    public function test_order_type_becomes_pre_order_when_stock_insufficient(): void
+    public function test_order_fails_when_stock_insufficient_but_greater_than_zero(): void
     {
         $user = User::factory()->create();
         $address = Address::factory()->create(['user_id' => $user->id]);
@@ -42,14 +42,10 @@ class StockLogicTest extends TestCase
                         'quantity' => 10, // More than stock
                     ],
                 ],
+                'payment_method' => 'midtrans_va',
             ]);
 
-        $response->assertStatus(201);
-        $response->assertJsonPath('order.type', 'pre_order');
-
-        $product->refresh();
-        $this->assertEquals(-5, $product->stock); // Decremented even if insufficient
-        $this->assertEquals('pre_order', $product->availability_status);
+        $response->assertStatus(422);
     }
 
     /**
@@ -68,14 +64,21 @@ class StockLogicTest extends TestCase
                     [
                         'product_id' => $product->id,
                         'quantity' => 5,
-                    ]
-                ]
+                    ],
+                ],
+                'payment_method' => 'midtrans_va',
             ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('order.type', 'ready_stock');
+        $orderId = $response->json('order_id');
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $orderId,
+            'type' => 'ready_stock',
+        ]);
 
         $product->refresh();
+
         $this->assertEquals(15, $product->stock);
         $this->assertEquals('ready_stock', $product->availability_status);
     }
@@ -95,4 +98,3 @@ class StockLogicTest extends TestCase
         $this->assertEquals('ready_stock', $product->availability_status);
     }
 }
-
