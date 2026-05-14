@@ -68,8 +68,8 @@ class StockLogicTest extends TestCase
                     [
                         'product_id' => $product->id,
                         'quantity' => 5,
-                    ],
-                ],
+                    ]
+                ]
             ]);
 
         $response->assertStatus(201);
@@ -79,4 +79,20 @@ class StockLogicTest extends TestCase
         $this->assertEquals(15, $product->stock);
         $this->assertEquals('ready_stock', $product->availability_status);
     }
+
+    /**
+     * Test that availability status changes when stock is updated manually (simulating Admin Update).
+     */
+    public function test_availability_status_changes_on_manual_stock_update(): void
+    {
+        $product = Product::factory()->create(['stock' => 10]);
+        $this->assertEquals('ready_stock', $product->availability_status);
+
+        $product->update(['stock' => 0]);
+        $this->assertEquals('pre_order', $product->availability_status);
+
+        $product->update(['stock' => 5]);
+        $this->assertEquals('ready_stock', $product->availability_status);
+    }
 }
+
