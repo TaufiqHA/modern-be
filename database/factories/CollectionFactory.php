@@ -18,7 +18,10 @@ class CollectionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => fake()->unique()->sentence(3),
+            'description' => fake()->paragraph(),
+            'image_url' => fake()->imageUrl(),
+            'slug' => null, // Let the model boot handle it
         ];
     }
 }

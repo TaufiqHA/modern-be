@@ -28,6 +28,13 @@ class Product extends Model
     use HasFactory;
 
     /**
+     * The attributes that should be appended to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['availability_status'];
+
+    /**
      * The "booted" method of the model.
      */
     protected static function booted(): void
@@ -37,6 +44,11 @@ class Product extends Model
                 $product->slug = Str::slug($product->name);
             }
         });
+    }
+
+    public function getAvailabilityStatusAttribute(): string
+    {
+        return $this->stock > 0 ? 'ready_stock' : 'pre_order';
     }
 
     /**

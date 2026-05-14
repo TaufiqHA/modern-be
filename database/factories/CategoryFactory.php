@@ -18,7 +18,9 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->unique()->word(),
+            'icon' => fake()->randomElement(['👟', '👕', '👒', '🎒', '🕶️']),
+            'slug' => null, // Let the model boot handle it
         ];
     }
 }
