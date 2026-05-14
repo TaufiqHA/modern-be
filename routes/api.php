@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\JastipController as AdminJastipController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\JastipController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShippingController;
@@ -41,4 +43,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Shipping Management
     Route::post('/shipping/cost', [ShippingController::class, 'calculate']);
+
+    // Jastip Request
+    Route::get('/jastip/requests', [JastipController::class, 'index']);
+    Route::post('/jastip/request', [JastipController::class, 'store']);
+    Route::post('/jastip/{id}/convert', [JastipController::class, 'convertToOrder']);
+});
+
+Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+    Route::patch('/jastip/{id}/quote', [AdminJastipController::class, 'updateQuote']);
 });
