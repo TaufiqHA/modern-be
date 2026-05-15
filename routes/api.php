@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\JastipController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PreorderRequestController;
 use App\Http\Controllers\ProductController;
@@ -63,6 +64,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Preorder Request
     Route::get('/preorder-requests', [PreorderRequestController::class, 'index']);
     Route::post('/preorder-requests', [PreorderRequestController::class, 'store']);
+
+    // Notification Management
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 });
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
