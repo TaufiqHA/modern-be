@@ -4,11 +4,13 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\JastipController as AdminJastipController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PreorderRequestController as AdminPreorderRequestController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\JastipController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PreorderRequestController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\UserController;
@@ -57,11 +59,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/jastip/requests', [JastipController::class, 'index']);
     Route::post('/jastip/request', [JastipController::class, 'store']);
     Route::post('/jastip/{id}/convert', [JastipController::class, 'convertToOrder']);
+
+    // Preorder Request
+    Route::get('/preorder-requests', [PreorderRequestController::class, 'index']);
+    Route::post('/preorder-requests', [PreorderRequestController::class, 'store']);
 });
 
-Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
     Route::patch('/jastip/{id}/quote', [AdminJastipController::class, 'updateQuote']);
+    Route::post('/jastip/{id}/convert', [AdminJastipController::class, 'convertToPreorder']);
     Route::patch('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
     Route::patch('/orders/{id}/verify-payment', [AdminOrderController::class, 'verifyPayment']);
 
@@ -69,4 +76,8 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::patch('/products/{id}', [AdminProductController::class, 'update']);
     Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
     Route::get('/products/{id}/stock-logs', [AdminProductController::class, 'stockLogs']);
+
+    // Preorder Request Management
+    Route::get('/preorder-requests', [AdminPreorderRequestController::class, 'index']);
+    Route::patch('/preorder-requests/{id}/status', [AdminPreorderRequestController::class, 'updateStatus']);
 });
