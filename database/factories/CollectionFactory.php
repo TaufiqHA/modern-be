@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Collection>
@@ -17,11 +18,13 @@ class CollectionFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->unique()->sentence(3);
+
         return [
-            'title' => fake()->unique()->sentence(3),
+            'title' => $title,
             'description' => fake()->paragraph(),
             'image_url' => fake()->imageUrl(),
-            'slug' => null, // Let the model boot handle it
+            'slug' => Str::slug($title),
         ];
     }
 }

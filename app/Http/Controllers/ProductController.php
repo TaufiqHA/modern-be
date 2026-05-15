@@ -32,6 +32,12 @@ class ProductController extends Controller
             });
         }
 
+        $query->when($request->filled('min_price'), function ($q) use ($request) {
+            $q->where('price', '>=', $request->min_price);
+        })->when($request->filled('max_price'), function ($q) use ($request) {
+            $q->where('price', '<=', $request->max_price);
+        });
+
         $limit = $request->integer('limit', 10);
         $products = $query->paginate($limit);
 

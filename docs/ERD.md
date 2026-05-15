@@ -156,3 +156,32 @@ Permintaan khusus pengguna untuk barang yang tidak ada di katalog (Personal Shop
 6.  **Orders - OrderItems (1:N)**: Satu pesanan terdiri dari satu atau lebih item barang.
 7.  **Orders - Addresses (N:1)**: Pesanan dikirim ke satu alamat spesifik milik user.
 8.  **Products - OrderItems (1:N)**: Satu produk bisa muncul di banyak detail pesanan.
+
+---
+
+## 4. Analisis Kebutuhan Data Tambahan (Berdasarkan UI Spec & PRD)
+
+Berdasarkan analisis terbaru, terdapat beberapa kebutuhan data yang perlu diakomodasi dalam schema database di masa mendatang:
+
+### 4.1 Manajemen User & Profil
+*   **Update Profile**: Perlu memastikan field `avatar_url`, `phone`, dan `name` pada tabel `USERS` dapat diupdate secara parsial.
+*   **Update & Delete Alamat**: Tabel `ADDRESSES` sudah mendukung ID, sehingga tinggal mengimplementasikan logic soft-delete atau hard-delete.
+*   **Ganti Password**: Keamanan kredensial pada tabel `USERS`.
+
+### 4.2 Manajemen Produk (Admin & Umum)
+*   **Status Produk**: Penambahan field `status` (active, inactive, archived) pada tabel `PRODUCTS`.
+*   **Riwayat Stok**: Perlu tabel baru `STOCK_LOGS` untuk mencatat perubahan stok (qty_before, qty_after, change_type, reason, admin_id).
+*   **Daftar Koleksi**: Tabel `COLLECTIONS` sudah ada, namun perlu dipastikan API-nya tersedia untuk umum.
+
+### 4.3 Alur Transaksi & Pembayaran
+*   **Ongkir**: Perlu field `shipping_cost` dan `courier_service` pada tabel `ORDERS`.
+*   **Bukti Transfer**: Penambahan field `payment_proof_url` pada tabel `ORDERS` untuk menampung link gambar bukti bayar manual.
+*   **Konfirmasi Admin**: Field `verified_at` atau `verified_by` pada tabel `ORDERS` untuk tracking validasi pembayaran.
+
+### 4.4 Alur Jastip & Pre-Order
+*   **Konversi ke PO**: Logic untuk menyalin data dari `JASTIP_REQUESTS` ke `PRODUCTS` (dengan flag `is_preorder`).
+*   **Request Pre-Order**: Tabel baru `PREORDER_REQUESTS` untuk mencatat minat user saat stok produk habis.
+
+### 4.5 Fitur Pendukung Lainnya
+*   **Sistem Notifikasi**: Tabel baru `NOTIFICATIONS` (user_id, title, message, type, is_read, created_at).
+*   **Filter Harga**: Optimization pada query `PRODUCTS` untuk filter `price` range.

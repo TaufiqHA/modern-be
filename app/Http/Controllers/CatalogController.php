@@ -27,7 +27,7 @@ class CatalogController extends Controller
     public function collections(): JsonResponse
     {
         $collections = Cache::remember('collections', 3600, function () {
-            return Collection::select(['id', 'title', 'slug', 'image_url'])->get();
+            return Collection::select(['id', 'title', 'slug', 'description', 'image_url'])->get();
         });
 
         return response()->json($collections);

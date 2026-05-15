@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\JastipRequest;
 use Illuminate\Database\Seeder;
 
 class JastipRequestSeeder extends Seeder
@@ -11,6 +12,6 @@ class JastipRequestSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        JastipRequest::factory()->count(5)->create();
     }
 }

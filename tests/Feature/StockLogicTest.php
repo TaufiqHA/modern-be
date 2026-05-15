@@ -17,10 +17,12 @@ class StockLogicTest extends TestCase
      */
     public function test_product_has_correct_availability_status(): void
     {
-        $readyProduct = Product::factory()->create(['stock' => 10]);
-        $preOrderProduct = Product::factory()->create(['stock' => 0]);
+        $readyProduct = Product::factory()->create(['stock' => 10, 'is_preorder' => false]);
+        $outOfStockProduct = Product::factory()->create(['stock' => 0, 'is_preorder' => false]);
+        $preOrderProduct = Product::factory()->create(['stock' => 0, 'is_preorder' => true]);
 
         $this->assertEquals('ready_stock', $readyProduct->availability_status);
+        $this->assertEquals('out_of_stock', $outOfStockProduct->availability_status);
         $this->assertEquals('pre_order', $preOrderProduct->availability_status);
     }
 
@@ -88,13 +90,16 @@ class StockLogicTest extends TestCase
      */
     public function test_availability_status_changes_on_manual_stock_update(): void
     {
-        $product = Product::factory()->create(['stock' => 10]);
+        $product = Product::factory()->create(['stock' => 10, 'is_preorder' => false]);
         $this->assertEquals('ready_stock', $product->availability_status);
 
         $product->update(['stock' => 0]);
+        $this->assertEquals('out_of_stock', $product->availability_status);
+
+        $product->update(['is_preorder' => true]);
         $this->assertEquals('pre_order', $product->availability_status);
 
-        $product->update(['stock' => 5]);
+        $product->update(['stock' => 5, 'is_preorder' => false]);
         $this->assertEquals('ready_stock', $product->availability_status);
     }
 }

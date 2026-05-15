@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Collection;
+use App\Models\StockLog;
 use Illuminate\Database\Seeder;
 
-class CollectionSeeder extends Seeder
+class StockLogSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Collection::factory()->count(3)->create();
+        StockLog::factory()->count(20)->create();
     }
 }

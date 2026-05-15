@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Collection;
+use App\Models\PreorderRequest;
 use Illuminate\Database\Seeder;
 
-class CollectionSeeder extends Seeder
+class PreorderRequestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Collection::factory()->count(3)->create();
+        PreorderRequest::factory()->count(10)->create();
     }
 }

@@ -274,3 +274,32 @@ Menambah produk baru ke katalog.
     "stock": 100
   }
   ```
+
+## 7. Pengembangan Mendatang & API Tambahan (Berdasarkan UI Spec & PRD)
+
+### 1. Manajemen User & Profil
+Walaupun fitur ini ada di halaman "Akun User" pada UI Spec, API-nya masih sangat minim di dokumen referensi:
+*   **Update Profile (PATCH /user/me)**: Dibutuhkan untuk menyimpan perubahan nama, email, nomor HP, dan foto profil yang ada di form edit profil.
+*   **Update & Delete Alamat (PATCH/DELETE /user/addresses/:id)**: Di UI Spec terdapat tombol [Edit] dan [Hapus] pada kartu alamat, namun API References baru menyediakan GET dan POST saja.
+*   **Ganti Password**: UI Spec menyebutkan adanya section terpisah untuk ganti password di sub-halaman profil.
+
+### 2. Manajemen Produk (Admin & Umum)
+Fitur CRUD produk belum terdokumentasi secara lengkap untuk sisi admin:
+*   **Update Produk (PATCH /admin/products/:id)**: UI Admin menyediakan tombol [Edit] untuk produk, namun di API baru ada endpoint untuk POST (tambah baru).
+*   **Hapus/Nonaktifkan Produk (DELETE atau PATCH /admin/products/:id/status)**: Dibutuhkan untuk tombol [Nonaktif] dan [Hapus] pada tabel produk admin.
+*   **Riwayat Stok (GET /admin/products/:id/stock-logs)**: PRD mewajibkan adanya "Riwayat perubahan stok", dan UI Admin memiliki tabel log khusus untuk ini, tetapi API-nya belum ada.
+*   **Daftar Koleksi (GET /collections)**: Meskipun collection muncul sebagai filter di API produk, endpoint untuk mengambil daftar semua koleksi (seperti "Edisi Esensial Modern") belum tersedia.
+
+### 3. Alur Transaksi & Pembayaran
+Beberapa endpoint kritikal untuk proses checkout dan konfirmasi masih hilang:
+*   **Cek Ongkir Otomatis (POST /shipping/calculate)**: PRD menyebutkan integrasi API ongkir otomatis saat checkout, namun belum ada endpoint spesifik di dokumentasi API.
+*   **Upload Bukti Transfer (POST /orders/:id/payment-proof)**: Halaman konfirmasi order dan PRD mewajibkan fitur unggah bukti bayar manual, namun endpoint ini belum tercatat.
+*   **Konfirmasi Pembayaran oleh Admin**: Di UI Admin terdapat tombol [Konfirmasi Pembayaran] pada modal detail order yang berbeda dengan sekadar update status pengiriman.
+
+### 4. Alur Jastip & Pre-Order
+*   **Konversi Jastip ke PO**: PRD dan UI Admin menjelaskan alur di mana admin dapat mengubah request Jastip yang disetujui menjadi listing Pre-Order secara otomatis. API untuk proses konversi ini belum ada.
+*   **Update Request Pre-Order**: PRD menyebutkan adanya "Halaman Request Preorder" di admin untuk memproses formulir yang masuk saat stok habis, namun API untuk mengelola data request PO ini belum tersedia.
+
+### 5. Fitur Pendukung Lainnya
+*   **Sistem Notifikasi (GET /notifications)**: UI Spec merancang ikon lonceng (bell) di navbar dan halaman notifikasi lengkap untuk admin dan user, namun API untuk mengambil daftar notifikasi ini belum tercantum.
+*   **Search & Filter Lanjutan**: Di UI Katalog terdapat filter dual-handle range slider untuk harga, sehingga API GET /products mungkin perlu tambahan parameter min_price dan max_price agar lebih akurat.

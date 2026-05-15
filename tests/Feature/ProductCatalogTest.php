@@ -76,6 +76,35 @@ class ProductCatalogTest extends TestCase
     }
 
     /**
+     * Test products listing can be filtered by price range.
+     */
+    public function test_products_listing_can_be_filtered_by_price_range(): void
+    {
+        Product::factory()->create(['price' => 100000]);
+        Product::factory()->create(['price' => 500000]);
+        Product::factory()->create(['price' => 1000000]);
+
+        // Test with range
+        $response = $this->getJson('/api/products?min_price=400000&max_price=600000');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.price', 500000);
+
+        // Test with only min_price
+        $response = $this->getJson('/api/products?min_price=600000');
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.price', 1000000);
+
+        // Test with only max_price
+        $response = $this->getJson('/api/products?max_price=400000');
+        $response->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.price', 100000);
+    }
+
+    /**
      * Test product detail endpoint.
      */
     public function test_product_detail_endpoint(): void

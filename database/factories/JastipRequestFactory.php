@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\JastipRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<JastipRequest>
@@ -19,6 +20,7 @@ class JastipRequestFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => 'JS-'.now()->format('Ymd').'-'.Str::upper(Str::random(4)),
             'user_id' => User::factory(),
             'product_name' => $this->faker->words(3, true),
             'product_link' => $this->faker->url(),

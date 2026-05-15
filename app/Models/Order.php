@@ -14,12 +14,16 @@ use Illuminate\Support\Str;
     'user_id',
     'address_id',
     'total_amount',
+    'shipping_cost',
+    'courier_service',
     'type',
     'status',
     'payment_status',
     'payment_method',
     'tracking_number',
     'payment_proof',
+    'verified_at',
+    'verified_by',
 ])]
 class Order extends Model
 {
@@ -61,6 +65,8 @@ class Order extends Model
     {
         return [
             'total_amount' => 'decimal:2',
+            'shipping_cost' => 'decimal:2',
+            'verified_at' => 'datetime',
         ];
     }
 
@@ -86,5 +92,13 @@ class Order extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get the user who verified the order.
+     */
+    public function verifier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }

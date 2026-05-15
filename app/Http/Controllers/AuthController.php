@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\OtpCode;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
@@ -142,6 +144,29 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Logged out successfully',
+        ]);
+    }
+
+    /**
+     * Change user password.
+     */
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Password saat ini tidak cocok.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Password berhasil diperbarui.',
         ]);
     }
 

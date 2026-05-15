@@ -21,6 +21,8 @@ use Illuminate\Support\Str;
     'rating',
     'image_url',
     'is_featured',
+    'status',
+    'is_preorder',
 ])]
 class Product extends Model
 {
@@ -48,7 +50,11 @@ class Product extends Model
 
     public function getAvailabilityStatusAttribute(): string
     {
-        return $this->stock > 0 ? 'ready_stock' : 'pre_order';
+        if ($this->is_preorder) {
+            return 'pre_order';
+        }
+
+        return $this->stock > 0 ? 'ready_stock' : 'out_of_stock';
     }
 
     /**
@@ -63,6 +69,7 @@ class Product extends Model
             'stock' => 'integer',
             'rating' => 'float',
             'is_featured' => 'boolean',
+            'is_preorder' => 'boolean',
         ];
     }
 
@@ -88,5 +95,21 @@ class Product extends Model
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get the stock logs for the product.
+     */
+    public function stockLogs(): HasMany
+    {
+        return $this->hasMany(StockLog::class)->latest();
+    }
+
+    /**
+     * Get the preorder requests for the product.
+     */
+    public function preorderRequests(): HasMany
+    {
+        return $this->hasMany(PreorderRequest::class);
     }
 }

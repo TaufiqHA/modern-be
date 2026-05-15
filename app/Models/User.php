@@ -56,4 +56,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(JastipRequest::class);
     }
+
+    /**
+     * Get the notifications for the user.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    /**
+     * Get the preorder requests for the user.
+     */
+    public function preorderRequests(): HasMany
+    {
+        return $this->hasMany(PreorderRequest::class);
+    }
 }

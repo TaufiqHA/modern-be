@@ -40,7 +40,26 @@ class CatalogTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonCount(2)
             ->assertJsonStructure([
-                '*' => ['id', 'title', 'slug', 'image_url'],
+                '*' => ['id', 'title', 'slug', 'description', 'image_url'],
+            ]);
+    }
+
+    /**
+     * Test collections endpoint returns data correctly.
+     */
+    public function test_collections_endpoint_returns_data_correctly(): void
+    {
+        Collection::factory()->create([
+            'title' => 'Summer Collection',
+            'description' => 'Hot summer items',
+        ]);
+
+        $response = $this->getJson('/api/collections');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'title' => 'Summer Collection',
+                'description' => 'Hot summer items',
             ]);
     }
 
