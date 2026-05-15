@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Order\UploadPaymentProofRequest;
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -58,8 +60,6 @@ class OrderController extends Controller
                 $quantity = $itemData['quantity'];
 
                 // Phase 5.1: Stock Exhaustion (422 Error)
-                // Logic: If stock > 0 but less than requested quantity, it's an error.
-                // If stock == 0, it becomes a pre_order (as per Stock & Status plan).
                 if ($product->stock > 0 && $product->stock < $quantity) {
                     throw ValidationException::withMessages([
                         "items.{$itemData['product_id']}.quantity" => "The requested quantity for '{$product->name}' exceeds available stock.",
@@ -81,10 +81,6 @@ class OrderController extends Controller
             }
 
             // Create Order
-            // ID format: ORD-YYYYMMDD-XXXX (handled in booted method of Order model,
-            // but let's ensure it matches the requested logic if needed).
-            // Actually, the booted method does: ORD-now()->format('Ymd').'-'.Str::upper(Str::random(4))
-            // which matches ORD-YYYYMMDD-XXXX.
             $order = Order::create([
                 'user_id' => $user->id,
                 'address_id' => $request->address_id,
@@ -126,30 +122,23 @@ class OrderController extends Controller
     /**
      * Upload payment proof for a manual payment order.
      */
-    public function uploadPaymentProof(Request $request, string $id)
+    public function uploadPaymentProof(UploadPaymentProofRequest $request, string $id): JsonResponse
     {
-        $request->validate([
-            'image' => [
-                'required',
-                'image',
-                'mimes:jpeg,png,jpg',
-                'max:2048', // 2MB
-            ],
-        ]);
-
+        // Cari order milik user, return 404 jika tidak ada/bukan miliknya
         $order = $request->user()->orders()->findOrFail($id);
 
-        // Security check: only allow upload if payment method is 'manual' or similar
-        // For now, we'll just allow it if it's currently unpaid.
-        if ($order->payment_status !== 'unpaid') {
+        // Proteksi: Jangan izinkan jika order sudah dibayar/selesai
+        if ($order->payment_status === 'paid') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Payment proof has already been uploaded or order is already paid.',
+                'message' => 'Pesanan ini sudah dikonfirmasi pembayarannya.',
             ], 400);
         }
 
+        // Simpan file
         $path = $request->file('image')->store('payment_proofs', 'public');
 
+        // Update data order
         $order->update([
             'payment_proof' => $path,
             'payment_status' => 'pending_verification',
@@ -157,7 +146,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Payment proof uploaded successfully',
+            'message' => 'Bukti transfer berhasil diunggah.',
             'payment_proof_url' => asset('storage/'.$path),
         ]);
     }

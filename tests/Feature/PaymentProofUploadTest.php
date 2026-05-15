@@ -37,7 +37,7 @@ class PaymentProofUploadTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
-                'message' => 'Payment proof uploaded successfully',
+                'message' => 'Bukti transfer berhasil diunggah.',
             ]);
 
         $order->refresh();
@@ -113,7 +113,7 @@ class PaymentProofUploadTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'status' => 'error',
-                'message' => 'Payment proof has already been uploaded or order is already paid.',
+                'message' => 'Pesanan ini sudah dikonfirmasi pembayarannya.',
             ]);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Shipping\CalculateShippingRequest;
 use App\Models\Address;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class ShippingController extends Controller
@@ -12,19 +12,8 @@ class ShippingController extends Controller
     /**
      * Calculate shipping cost using RajaOngkir API.
      */
-    public function calculate(Request $request): JsonResponse
+    public function calculate(CalculateShippingRequest $request): JsonResponse
     {
-        $user = $request->user();
-
-        $request->validate([
-            'address_id' => [
-                'required',
-                'exists:addresses,id,user_id,'.$user->id,
-            ],
-            'weight' => 'required|integer|min:1',
-            'courier' => 'required|string|in:jne,pos,tiki',
-        ]);
-
         $address = Address::findOrFail($request->address_id);
 
         if (empty($address->city_id)) {
@@ -55,21 +44,22 @@ class ShippingController extends Controller
             $data = $response->json();
             $results = [];
 
-            if (isset($data['data']) && is_array($data['data'])) {
-                foreach ($data['data'] as $item) {
+            // Handle standard RajaOngkir response structure
+            if (isset($data['rajaongkir']['results'][0]['costs'])) {
+                foreach ($data['rajaongkir']['results'][0]['costs'] as $cost) {
                     $results[] = [
-                        'service' => $item['service'],
-                        'description' => $item['description'],
-                        'cost' => $item['cost'],
-                        'etd' => $item['etd'],
+                        'service' => $cost['service'],
+                        'description' => $cost['description'],
+                        'cost' => $cost['cost'][0]['value'],
+                        'etd' => $cost['cost'][0]['etd'].' Hari',
                     ];
                 }
             }
 
             return response()->json([
                 'status' => 'success',
-                'origin' => 'Origin ID: '.config('services.rajaongkir.origin'),
-                'destination' => 'Destination ID: '.$address->city_id,
+                'origin' => $data['rajaongkir']['origin_details']['city_name'] ?? 'Unknown',
+                'destination' => $data['rajaongkir']['destination_details']['city_name'] ?? 'Unknown',
                 'results' => $results,
             ]);
 

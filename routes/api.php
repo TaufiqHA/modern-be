@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/{id}/payment-proof', [OrderController::class, 'uploadPaymentProof']);
 
     // Shipping Management
-    Route::post('/shipping/cost', [ShippingController::class, 'calculate']);
+    Route::post('/shipping/calculate', [ShippingController::class, 'calculate']);
 
     // Jastip Request
     Route::get('/jastip/requests', [JastipController::class, 'index']);
@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
     Route::patch('/jastip/{id}/quote', [AdminJastipController::class, 'updateQuote']);
     Route::patch('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::patch('/orders/{id}/verify-payment', [AdminOrderController::class, 'verifyPayment']);
 
     // Product Management
     Route::patch('/products/{id}', [AdminProductController::class, 'update']);

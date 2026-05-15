@@ -24,7 +24,7 @@ class ShippingTest extends TestCase
         ]);
 
         Http::fake([
-            'api.rajaongkir.com/*' => Http::response([
+            '*' => Http::response([
                 'rajaongkir' => [
                     'origin_details' => ['city_name' => 'Jakarta Barat'],
                     'destination_details' => ['city_name' => 'Surabaya'],
@@ -46,7 +46,7 @@ class ShippingTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson('/api/shipping/cost', [
+            ->postJson('/api/shipping/calculate', [
                 'address_id' => $address->id,
                 'weight' => 1000,
                 'courier' => 'jne',
@@ -62,7 +62,7 @@ class ShippingTest extends TestCase
                         'service' => 'REG',
                         'description' => 'Reguler',
                         'cost' => 15000,
-                        'etd' => '2-3',
+                        'etd' => '2-3 Hari',
                     ],
                 ],
             ]);
@@ -80,7 +80,7 @@ class ShippingTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson('/api/shipping/cost', [
+            ->postJson('/api/shipping/calculate', [
                 'address_id' => $address->id,
                 'weight' => 1000,
                 'courier' => 'jne',
@@ -105,7 +105,7 @@ class ShippingTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)
-            ->postJson('/api/shipping/cost', [
+            ->postJson('/api/shipping/calculate', [
                 'address_id' => $address->id,
                 'weight' => 1000,
                 'courier' => 'invalid',

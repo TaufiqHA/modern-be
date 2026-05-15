@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\OrderStatusUpdated;
 use App\Models\Order;
 use App\Services\WhatsAppService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -57,6 +58,40 @@ class OrderController extends Controller
                 'status' => $order->status,
                 'tracking_number' => $order->tracking_number,
             ],
+        ]);
+    }
+
+    /**
+     * Confirm the payment of an order manually by an admin.
+     */
+    public function verifyPayment(Request $request, string $id): JsonResponse
+    {
+        // Simple admin check
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized. Only admins can verify payments.'], 403);
+        }
+
+        $order = Order::findOrFail($id);
+
+        // Validation: Ensure order is not already paid
+        if ($order->payment_status === 'paid') {
+            return response()->json([
+                'message' => 'Pembayaran pesanan ini sudah diverifikasi sebelumnya.',
+            ], 400);
+        }
+
+        // Update data
+        $order->update([
+            'verified_at' => now(),
+            'verified_by' => $request->user()->id,
+            'payment_status' => 'paid',
+            'status' => 'processed', // Transition to next state
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pembayaran berhasil diverifikasi.',
+            'data' => $order,
         ]);
     }
 }
